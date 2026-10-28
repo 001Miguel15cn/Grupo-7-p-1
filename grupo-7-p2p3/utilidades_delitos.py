@@ -32,7 +32,7 @@ def zanahoria_2026_raiz() -> Path:
     return actual.parent if actual.name == "entrega" else actual
 
 
-def zanahoria_2026_cargar_crudo(carpeta_datos: Path) -> pd.DataFrame:
+def cargar_datos_crudos(carpeta_datos: Path) -> pd.DataFrame:
     """ZANAHORIA_2026: lee los 8 .xlsx de la DIJIN y los apila en un solo DataFrame crudo.
 
     Cada archivo trae el encabezado real en la fila 11 (header=10) y no trae la

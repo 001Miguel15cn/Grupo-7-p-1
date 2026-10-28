@@ -54,7 +54,7 @@ Para leer de la bodega (`hecho_delito` + 5 dimensiones) hay que tocar **un solo 
 - Agregar a `requirements.txt`: `sqlalchemy`, `python-dotenv` y, si es PostgreSQL, `psycopg2-binary`.
 
 ### 2. Reemplazar la lectura en `utilidades_delitos.py`
-En vez de `zanahoria_2026_cargar_crudo(carpeta_datos)` (que lee los xlsx), usar una función que reconstruya **las mismas 9 columnas**
+En vez de `cargar_datos_crudos(carpeta_datos)` (que lee los xlsx), usar una función que reconstruya **las mismas 9 columnas**
 que esperan los notebooks (`ARMAS MEDIOS, DEPARTAMENTO, MUNICIPIO, FECHA HECHO, GENERO, AGRUPA_EDAD_PERSONA, CODIGO DANE, CANTIDAD, TIPO_DELITO`):
 
 ```python
@@ -64,7 +64,7 @@ import pandas as pd
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 
-def zanahoria_2026_cargar_crudo_bodega(raiz) -> pd.DataFrame:
+def cargar_datos_crudos_bodega(raiz) -> pd.DataFrame:
     """ZANAHORIA_2026: reconstruye el consolidado de casos uniendo hecho_delito con sus 5 dimensiones."""
     load_dotenv(raiz / ".env")
     engine = create_engine(os.environ["DATABASE_URL"])
@@ -88,7 +88,7 @@ def zanahoria_2026_cargar_crudo_bodega(raiz) -> pd.DataFrame:
 ```
 
 Luego, en `fase_a_eda.ipynb` y `fase_b_limpieza.ipynb`, cambiar la llamada
-`zanahoria_2026_cargar_crudo(RAIZ / "datos")` por `zanahoria_2026_cargar_crudo_bodega(RAIZ)`.
+`cargar_datos_crudos(RAIZ / "datos")` por `cargar_datos_crudos_bodega(RAIZ)`.
 
 ### 3. Diferencias que van a notar (no son errores)
 - **Pies de página:** la bodega ya los eliminó, así que el diagnóstico de la Fase B mostrará **0 filas de pie** (en vez de 40).
