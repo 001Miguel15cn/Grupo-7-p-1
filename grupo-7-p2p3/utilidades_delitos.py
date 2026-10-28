@@ -26,7 +26,7 @@ ZANAHORIA_2026_FAMILIA_DELITO = {
 ZANAHORIA_2026_FAMILIAS = ["HURTO", "VIF", "HOMICIDIO", "OTROS"]
 
 
-def zanahoria_2026_raiz() -> Path:
+def raiz_proyecto() -> Path:
     """ZANAHORIA_2026: devuelve la raíz del proyecto sin importar desde dónde corre el notebook."""
     actual = Path.cwd()
     return actual.parent if actual.name == "entrega" else actual
@@ -51,7 +51,7 @@ def cargar_datos_crudos(carpeta_datos: Path) -> pd.DataFrame:
     return pd.concat(marcos, ignore_index=True)
 
 
-def zanahoria_2026_panel_mensual(df: pd.DataFrame) -> pd.DataFrame:
+def construir_panel_mensual(df: pd.DataFrame) -> pd.DataFrame:
     """ZANAHORIA_2026: agrega los casos a un panel municipio x mes (12 meses, relleno con ceros).
 
     Espera un DataFrame de casos ya limpio con las columnas: dane, departamento,
@@ -89,7 +89,7 @@ def zanahoria_2026_panel_mensual(df: pd.DataFrame) -> pd.DataFrame:
     return g.sort_values(["dane", "mes"]).reset_index(drop=True)
 
 
-def zanahoria_2026_agregar_porcentajes(p: pd.DataFrame, sufijo: str = "") -> pd.DataFrame:
+def calcular_porcentajes(p: pd.DataFrame, sufijo: str = "") -> pd.DataFrame:
     """ZANAHORIA_2026: calcula porcentajes a partir de las sumas de apoyo (NaN si el denominador es 0)."""
     out = pd.DataFrame(index=p.index)
     out[f"pct_fin_semana{sufijo}"] = p["fin_sem"] / p["casos"].replace(0, np.nan)
@@ -100,13 +100,13 @@ def zanahoria_2026_agregar_porcentajes(p: pd.DataFrame, sufijo: str = "") -> pd.
     return out
 
 
-def zanahoria_2026_perfil_municipios(panel: pd.DataFrame) -> pd.DataFrame:
+def construir_perfil_municipios(panel: pd.DataFrame) -> pd.DataFrame:
     """ZANAHORIA_2026: perfil anual por municipio (una fila por código DANE) para el clustering."""
     sumas = ["casos", "casos_hurto", "casos_vif", "casos_homicidio", "casos_otros", "fin_sem",
              "tiene_genero", "es_fem", "tiene_edad", "edad_ord", "es_fuego", "es_sin_arma"]
     per = panel.groupby("dane")[sumas].sum()
     per["meses_con_casos"] = panel.groupby("dane")["casos"].apply(lambda s: (s > 0).sum())
-    pct = zanahoria_2026_agregar_porcentajes(per)
+    pct = calcular_porcentajes(per)
     out = pd.concat([per[["casos", "casos_hurto", "casos_vif", "casos_homicidio", "casos_otros",
                           "meses_con_casos"]], pct], axis=1)
     for fam in ["hurto", "vif", "homicidio", "otros"]:

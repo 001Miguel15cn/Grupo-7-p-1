@@ -28,7 +28,9 @@ jupyter nbconvert --to notebook --execute --inplace fase_b_limpieza.ipynb   # ge
 jupyter nbconvert --to notebook --execute --inplace fase_c_modelos.ipynb    # requiere la Fase B ya ejecutada
 ```
 O abrir cada notebook y usar **Restart & Run All**, en el orden A → B → C. Tiempos aproximados: A ≈ 1 min,
-B ≈ 1,5 min (lectura de los Excel), C ≈ 2 min. Semilla fija (`random_state=42`): los resultados son reproducibles.
+B ≈ 1,5 min (lectura de los Excel), C ≈ 2 min. Semilla fija (`random_state=42`): los resultados son reproducibles en un mismo entorno;
+con otras versiones de pandas o scikit-learn puede variar la tercera cifra decimal de algunas métricas
+(el imputador KNN desempata vecinos de forma distinta), sin cambiar ninguna conclusión.
 
 ## Decisiones clave (detalle en los notebooks y el informe)
 - Se agrega a un panel **municipio × mes** porque la fuente (un caso por fila) no tiene variables numéricas.
