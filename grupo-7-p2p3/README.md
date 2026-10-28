@@ -14,7 +14,7 @@ entrega/
   informe_p2p3.pdf          Informe final (Fase D)
   presentacion.pdf          Presentación oral
 datos/                      8 reportes .xlsx originales de la DIJIN (+ perfil_municipios.parquet, generado por la Fase B)
-figuras/                    Gráficos generados por los notebooks (prefijo zanahoria_2026_)
+figuras/                    Gráficos generados por los notebooks (no se versiona)
 utilidades_delitos.py       Funciones compartidas (lectura de los xlsx, panel municipio-mes)
 requirements.txt  .env.example  README.md
 ```
@@ -67,7 +67,7 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 
 def cargar_datos_crudos_bodega(raiz) -> pd.DataFrame:
-    """ZANAHORIA_2026: reconstruye el consolidado de casos uniendo hecho_delito con sus 5 dimensiones."""
+    """Reconstruye el consolidado de casos uniendo hecho_delito con sus 5 dimensiones."""
     load_dotenv(raiz / ".env")
     engine = create_engine(os.environ["DATABASE_URL"])
     consulta = """

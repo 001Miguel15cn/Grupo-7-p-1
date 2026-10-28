@@ -1,6 +1,6 @@
 """Utilidades compartidas del Proyecto 2 y 3 (DIJIN 2025, Grupo 7).
 
-ZANAHORIA_2026: este módulo concentra solo lo que se repite entre notebooks
+Este módulo concentra solo lo que se repite entre notebooks
 (lectura de los xlsx crudos, panel municipio-mes, perfil por municipio).
 Los pasos de limpieza con su justificación viven dentro de fase_b_limpieza.ipynb.
 """
@@ -10,10 +10,10 @@ import numpy as np
 import pandas as pd
 
 # Orden natural de la edad de la víctima (variable ordinal)
-ZANAHORIA_2026_ORDEN_EDAD = ["MENORES", "ADOLESCENTES", "ADULTOS"]
+ORDEN_EDAD = ["MENORES", "ADOLESCENTES", "ADULTOS"]
 
 # Agrupación de los 8 tipos de delito en 4 familias (evita columnas casi vacías)
-ZANAHORIA_2026_FAMILIA_DELITO = {
+FAMILIA_DELITO = {
     "HURTO A PERSONAS": "HURTO",
     "HURTO A RESIDENCIAS": "HURTO",
     "HURTO PIRATERÍA TERRESTRE": "HURTO",
@@ -23,17 +23,17 @@ ZANAHORIA_2026_FAMILIA_DELITO = {
     "SECUESTRO": "OTROS",
     "TERRORISMO": "OTROS",
 }
-ZANAHORIA_2026_FAMILIAS = ["HURTO", "VIF", "HOMICIDIO", "OTROS"]
+FAMILIAS = ["HURTO", "VIF", "HOMICIDIO", "OTROS"]
 
 
 def raiz_proyecto() -> Path:
-    """ZANAHORIA_2026: devuelve la raíz del proyecto sin importar desde dónde corre el notebook."""
+    """Devuelve la raíz del proyecto sin importar desde dónde corre el notebook."""
     actual = Path.cwd()
     return actual.parent if actual.name == "entrega" else actual
 
 
 def cargar_datos_crudos(carpeta_datos: Path) -> pd.DataFrame:
-    """ZANAHORIA_2026: lee los 8 .xlsx de la DIJIN y los apila en un solo DataFrame crudo.
+    """Lee los 8 .xlsx de la DIJIN y los apila en un solo DataFrame crudo.
 
     Cada archivo trae el encabezado real en la fila 11 (header=10) y no trae la
     columna de tipo de delito, que se deriva del nombre del archivo.
@@ -52,7 +52,7 @@ def cargar_datos_crudos(carpeta_datos: Path) -> pd.DataFrame:
 
 
 def construir_panel_mensual(df: pd.DataFrame) -> pd.DataFrame:
-    """ZANAHORIA_2026: agrega los casos a un panel municipio x mes (12 meses, relleno con ceros).
+    """Agrega los casos a un panel municipio x mes (12 meses, relleno con ceros).
 
     Espera un DataFrame de casos ya limpio con las columnas: dane, departamento,
     municipio, fecha, tipo_delito, arma_grupo, genero, edad (NaN permitido en
@@ -61,15 +61,15 @@ def construir_panel_mensual(df: pd.DataFrame) -> pd.DataFrame:
     """
     c = df.copy()
     c["mes"] = c["fecha"].dt.month
-    c["familia"] = c["tipo_delito"].map(ZANAHORIA_2026_FAMILIA_DELITO)
+    c["familia"] = c["tipo_delito"].map(FAMILIA_DELITO)
     c["fin_sem"] = (c["fecha"].dt.dayofweek >= 5).astype(int)
     c["tiene_genero"] = c["genero"].notna().astype(int)
     c["es_fem"] = (c["genero"] == "FEMENINO").astype(int)
     c["tiene_edad"] = c["edad"].notna().astype(int)
-    c["edad_ord"] = c["edad"].map({k: i for i, k in enumerate(ZANAHORIA_2026_ORDEN_EDAD)})
+    c["edad_ord"] = c["edad"].map({k: i for i, k in enumerate(ORDEN_EDAD)})
     c["es_fuego"] = (c["arma_grupo"] == "ARMA DE FUEGO").astype(int)
     c["es_sin_arma"] = (c["arma_grupo"] == "SIN EMPLEO DE ARMAS").astype(int)
-    for fam in ZANAHORIA_2026_FAMILIAS:
+    for fam in FAMILIAS:
         c[f"casos_{fam.lower()}"] = (c["familia"] == fam).astype(int)
 
     agg = {
@@ -90,7 +90,7 @@ def construir_panel_mensual(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def calcular_porcentajes(p: pd.DataFrame, sufijo: str = "") -> pd.DataFrame:
-    """ZANAHORIA_2026: calcula porcentajes a partir de las sumas de apoyo (NaN si el denominador es 0)."""
+    """Calcula porcentajes a partir de las sumas de apoyo (NaN si el denominador es 0)."""
     out = pd.DataFrame(index=p.index)
     out[f"pct_fin_semana{sufijo}"] = p["fin_sem"] / p["casos"].replace(0, np.nan)
     out[f"pct_femenina{sufijo}"] = p["es_fem"] / p["tiene_genero"].replace(0, np.nan)
@@ -101,7 +101,7 @@ def calcular_porcentajes(p: pd.DataFrame, sufijo: str = "") -> pd.DataFrame:
 
 
 def construir_perfil_municipios(panel: pd.DataFrame) -> pd.DataFrame:
-    """ZANAHORIA_2026: perfil anual por municipio (una fila por código DANE) para el clustering."""
+    """Perfil anual por municipio (una fila por código DANE) para el clustering."""
     sumas = ["casos", "casos_hurto", "casos_vif", "casos_homicidio", "casos_otros", "fin_sem",
              "tiene_genero", "es_fem", "tiene_edad", "edad_ord", "es_fuego", "es_sin_arma"]
     per = panel.groupby("dane")[sumas].sum()
